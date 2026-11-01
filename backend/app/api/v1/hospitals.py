@@ -77,6 +77,10 @@ async def update_hospital_status(
     if not hospital:
         raise HTTPException(status_code=404, detail="Hospital not found")
 
+    old_status = hospital.approval_status
+    hospital.approval_status = status_update.approval_status
+    hospital.is_active = status_update.approval_status == HospitalStatus.APPROVED
+
     old_status_val = getattr(old_status, "value", str(old_status))
     new_status_val = getattr(status_update.approval_status, "value", str(status_update.approval_status))
     

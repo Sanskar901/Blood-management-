@@ -55,13 +55,15 @@ async def test_admin_operations_flow(client: AsyncClient, db_session: AsyncSessi
     assert approve_res.status_code == 200, f"Approve hospital failed: {approve_res.text}"
     approved_hosp = approve_res.json()
     assert approved_hosp["approval_status"] == "APPROVED"
+    assert approved_hosp["is_active"] is True
 
     # 6. Test audit logs
     audit_res = await client.get("/api/v1/admin/audit-logs", headers=admin_headers)
     assert audit_res.status_code == 200, f"Audit logs failed: {audit_res.text}"
     logs = audit_res.json()
     assert len(logs) >= 1
-    assert any(l["action"] == "HOSPITAL_STATUS_CHANGED" for l in logs)
+    status_change_log = next(l for l in logs if l["action"] == "HOSPITAL_STATUS_CHANGED")
+    assert "PENDING to APPROVED" in status_change_log["details"]
 
     # 7. Test CSV inventory export
     export_res = await client.get("/api/v1/admin/export/inventory", headers=admin_headers)
