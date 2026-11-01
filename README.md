@@ -121,6 +121,29 @@ python -m pytest backend/tests -v
 
 ---
 
+## ☁️ Demo Deployment (Vercel + Render)
+
+Deploy the backend and database separately, then deploy the `frontend` directory
+as a Vite project on Vercel.
+
+1. In Vercel, import this repository and set **Root Directory** to `frontend`.
+   Use `npm run build` as the build command and `dist` as the output directory.
+2. In Vercel project settings, add the `VITE_API_BASE_URL` environment variable
+   with the backend URL followed by `/api/v1`, for example:
+   `https://your-backend.onrender.com/api/v1`. Redeploy after changing it.
+3. In the backend hosting service, set `BACKEND_CORS_ORIGINS` to a JSON array
+   containing the exact Vercel site origin, for example:
+   `["https://your-app.vercel.app"]`. Include any Vercel preview origins you
+   intend to use.
+4. Confirm the backend `/health` endpoint reports a healthy database, then test
+   the deployed frontend. Use fictional demo data only; this prototype is not
+   intended for real patient or live hospital inventory data.
+
+For local development, leave `VITE_API_BASE_URL` unset; Vite continues to proxy
+`/api` requests to `http://127.0.0.1:8000`.
+
+---
+
 ## 🔑 Demo Accounts (Pre-configured)
 
 | Role | Email | Password | Access Scope |
